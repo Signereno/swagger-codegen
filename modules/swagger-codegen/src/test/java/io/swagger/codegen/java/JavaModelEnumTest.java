@@ -35,7 +35,7 @@ public class JavaModelEnumTest {
         final CodegenProperty enumVar = cm.vars.get(0);
         Assert.assertEquals(enumVar.baseName, "name");
         Assert.assertEquals(enumVar.datatype, "String");
-        Assert.assertEquals(enumVar.datatypeWithEnum, "NameEnum");
+        Assert.assertEquals(enumVar.datatypeWithEnum, "Name");
         Assert.assertEquals(enumVar.name, "name");
         Assert.assertEquals(enumVar.defaultValue, "null");
         Assert.assertEquals(enumVar.baseType, "String");
@@ -89,7 +89,7 @@ public class JavaModelEnumTest {
         final CodegenProperty enumVar = cm.vars.get(0);
         Assert.assertEquals(enumVar.baseName, "unsharedThing");
         Assert.assertEquals(enumVar.datatype, "String");
-        Assert.assertEquals(enumVar.datatypeWithEnum, "UnsharedThingEnum");
+        Assert.assertEquals(enumVar.datatypeWithEnum, "UnsharedThing");
         Assert.assertTrue(enumVar.isEnum);
     }
 }

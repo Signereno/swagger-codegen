@@ -1845,7 +1845,7 @@ public class DefaultCodegen {
             property.maxItems = ap.getMaxProperties();
 
             // handle inner property
-            CodegenProperty cp = fromProperty("inner", ap.getAdditionalProperties());
+            CodegenProperty cp = fromProperty(property.name, ap.getAdditionalProperties()); // The "property.name" here used to a hard-coded string "inner". No idea why it was seen as necessary to use a hardcoded string, but if name-conflicts occur, maybe try to use a prefix or something?
             updatePropertyForMap(property, cp);
         } else {
             setNonArrayMapProperty(property, type);
@@ -1981,7 +1981,8 @@ public class DefaultCodegen {
 
         if (baseItem != null) {
             // set both datatype and datetypeWithEnum as only the inner type is enum
-            property.datatypeWithEnum = property.datatypeWithEnum.replace(", " + baseItem.baseType, ", " + toEnumName(baseItem));
+            //property.datatypeWithEnum = property.datatypeWithEnum.replace(", " + baseItem.baseType, ", " + toEnumName(baseItem));
+            property.datatypeWithEnum = property.datatypeWithEnum.replace(property.items.datatype, property.items.datatypeWithEnum);
 
             // naming the enum with respect to the language enum naming convention
             // e.g. remove [], {} from array/map of enum
