@@ -7,8 +7,11 @@ import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+
+import static java.util.Collections.sort;
 
 public class IdfyJavaClientCodegen extends JavaClientCodegen {
     public IdfyJavaClientCodegen() {
@@ -43,24 +46,28 @@ public class IdfyJavaClientCodegen extends JavaClientCodegen {
         return codegenModel;
     }
 
-    //@Override
-    //public String getTypeDeclaration(Property p) {
-    //    if (p instanceof ArrayProperty) {
-    //        ArrayProperty ap = (ArrayProperty) p;
-    //        Property inner = ap.getItems();
-    //        if (inner == null) {
-    //            return null;
-    //        }
-    //        return getSwaggerType(p) + "<" + getTypeDeclaration(inner) + ">";
-    //    } else if (p instanceof MapProperty) {
-    //        MapProperty mp = (MapProperty) p;
-    //        Property inner = mp.getAdditionalProperties();
-    //        if (inner == null) {
-    //            return null;
-    //        }
-    //        return getSwaggerType(p) + "<String, " + getTypeDeclaration(inner) + ">";
-    //    }
-    //    return super.getTypeDeclaration(p);
-    //}
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        super.postProcessOperations(objs);
+        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+        if (operations != null) {
+            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+            for (CodegenOperation operation : ops) {
+                if (operation.returnBaseType != null && operation.returnBaseType == "Object") {
+                    operation.returnBaseType = null;
+
+                }
+            }
+        }
+        return objs;
+    }
+
+    @Override
+    public String toApiName(String name) {
+        if (name.length() == 0) {
+            return "DefaultService";
+        }
+        return camelize(name) + "Service";
+    }
 
 }

@@ -2302,7 +2302,7 @@ public class DefaultCodegen {
         }
 
         op.bodyParam = bodyParam;
-        op.httpMethod = httpMethod.toUpperCase();
+        op.httpMethod = httpMethod; // .toUpperCase();
 
         // move "required" parameters in front of "optional" parameters
         if (sortParamsByRequiredFlag) {

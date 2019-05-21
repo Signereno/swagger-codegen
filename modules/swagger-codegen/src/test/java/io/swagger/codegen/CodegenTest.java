@@ -65,7 +65,7 @@ public class CodegenTest {
         final CodegenOperation op = codegen.fromOperation(path, "post", p, model.getDefinitions());
 
         Assert.assertEquals(op.operationId, "uploadFile");
-        Assert.assertEquals(op.httpMethod, "POST");
+        Assert.assertEquals(op.httpMethod, "post"); // "POST"
         Assert.assertTrue(op.hasConsumes);
         Assert.assertEquals(op.consumes.size(), 1);
         Assert.assertEquals(op.consumes.get(0).get("mediaType"), "multipart/form-data");
@@ -90,7 +90,7 @@ public class CodegenTest {
         final CodegenOperation op = codegen.fromOperation(path, "post", p, model.getDefinitions());
 
         Assert.assertEquals(op.operationId, "updatePetWithForm");
-        Assert.assertEquals(op.httpMethod, "POST");
+        Assert.assertEquals(op.httpMethod, "post"); // "POST"
         Assert.assertTrue(op.hasConsumes);
         Assert.assertEquals(op.consumes.size(), 1);
         Assert.assertEquals(op.consumes.get(0).get("mediaType"), "application/x-www-form-urlencoded");
