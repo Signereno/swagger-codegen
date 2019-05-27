@@ -513,11 +513,14 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                     // to generate api test files
                     for (String templateName : config.apiTestTemplateFiles().keySet()) {
                         String filename = config.apiTestFilename(templateName, tag);
-                        // do not overwrite test file that already exists
-                        if (new File(filename).exists()) {
-                            LOGGER.info("File exists. Skipped overwriting " + filename);
-                            continue;
-                        }
+                        // You're normally not supposed to overwrite test files that already exist
+                        // If you want to add back some functionality regarding test files, this is
+                        // the place to do it.
+
+                        //if (new File(filename).exists()) {
+                        //    LOGGER.info("File exists. Skipped overwriting " + filename);
+                        //    continue;
+                        //}
 
                         File written = processTemplateToFile(operation, templateName, filename);
                         if (written != null) {
