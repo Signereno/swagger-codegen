@@ -280,6 +280,10 @@ public class InlineModelResolver {
         Map<String, Model> modelsToAdd = new HashMap<String, Model>();
         for (String key : properties.keySet()) {
             Property property = properties.get(key);
+
+            property = flattenEnums(property, propsToUpdate, modelsToAdd, path, key); // Find enums declared in properties and create models for them. -Eivind
+            // properties.put(key, property); // There's no way to tell in the template whether the property is a reference property. I need to be able to tell if i need to make it nullable.
+
             if (property instanceof ObjectProperty && ((ObjectProperty) property).getProperties() != null
                     && ((ObjectProperty) property).getProperties().size() > 0) {
 
@@ -363,6 +367,50 @@ public class InlineModelResolver {
         }
     }
 
+    private Property flattenEnums(Property property, Map<String, Property> propsToUpdate, Map<String, Model> modelsToAdd ,String path, String key) {
+
+        if (property instanceof StringProperty && ((StringProperty) property).getEnum() != null) {
+
+            StringProperty sp = (StringProperty) property;
+
+            String modelName = resolveModelName(sp.getTitle(), path + "_" + key);
+            Model model = modelFromProperty(sp, modelName);
+
+            String existing = matchGenerated(model);
+
+            if (existing != null) {
+                RefProperty refProperty = new RefProperty(existing);
+                refProperty.setRequired(sp.getRequired());
+                // propsToUpdate.put(key, refProperty);
+                return refProperty;
+            } else {
+                RefProperty refProperty = new RefProperty(modelName);
+                refProperty.setRequired(sp.getRequired());
+                //propsToUpdate.put(key, refProperty);
+                modelsToAdd.put(modelName, model);
+                addGenerated(modelName, model);
+                swagger.addDefinition(modelName, model);
+                return refProperty;
+            }
+        } else if (property instanceof ArrayProperty) {
+            ArrayProperty ap = (ArrayProperty) property;
+            Property inner = ap.getItems();
+
+            ap.setItems(flattenEnums(inner, propsToUpdate, modelsToAdd, path, key));
+
+            return ap;
+        } else if (property instanceof MapProperty) {
+            MapProperty mp = (MapProperty) property;
+            Property inner = mp.getAdditionalProperties();
+
+            mp.setAdditionalProperties(flattenEnums(inner, propsToUpdate, modelsToAdd, path, key));
+
+            return mp;
+        }
+
+        return property;
+    }
+
     @SuppressWarnings("static-method")
     public Model modelFromProperty(ArrayProperty object, @SuppressWarnings("unused") String path) {
         String description = object.getDescription();
@@ -406,6 +454,34 @@ public class InlineModelResolver {
         if (properties != null) {
             flattenProperties(properties, path);
             model.setProperties(properties);
+        }
+
+        return model;
+    }
+
+    // For making enum models -Eivind
+    public Model modelFromProperty(StringProperty object, String modelName) {
+        String description = object.getDescription();
+        String example = null;
+
+        Object obj = object.getExample();
+        if (obj != null) {
+            example = obj.toString();
+        }
+        String name = object.getName();
+        Xml xml = object.getXml();
+        List<String> _enum = object.getEnum();
+
+        ModelImpl model = new ModelImpl();
+        model.setDescription(description);
+        model.setExample(example);
+        model.setName(name); // This should probably be set to modelName -> update: maybe not.
+        model.setXml(xml);
+        model.setType("string");
+        model.setFormat("enum");
+
+        if (_enum != null) {
+            model.setEnum(_enum);
         }
 
         return model;

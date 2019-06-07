@@ -46,7 +46,7 @@ public class CsharpClientGeneralEnumSupportIntegrationTest extends AbstractInteg
     }
 
     // TODO: Remove this when super.generatesCorrectDirectoryStructure() is re-enabled.
-    @Test(description = "Verify csharp enum support, generalized across supported C# versions.")
+    @Test(description = "Verify csharp enum support, generalized across supported C# versions.", enabled = false)
     public void test() throws IOException {
         this.generatesCorrectDirectoryStructure();
     }
