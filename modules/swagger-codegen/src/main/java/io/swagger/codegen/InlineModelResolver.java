@@ -281,8 +281,9 @@ public class InlineModelResolver {
         for (String key : properties.keySet()) {
             Property property = properties.get(key);
 
-            property = flattenEnums(property, propsToUpdate, modelsToAdd, path, key); // Find enums declared in properties and create models for them. -Eivind
+            property = flattenEnums(property, properties, modelsToAdd, path, key); // Find enums declared in properties and create models for them. -Eivind
             // properties.put(key, property); // There's no way to tell in the template whether the property is a reference property. I need to be able to tell if i need to make it nullable.
+            properties.put(key, property);
 
             if (property instanceof ObjectProperty && ((ObjectProperty) property).getProperties() != null
                     && ((ObjectProperty) property).getProperties().size() > 0) {
@@ -367,7 +368,7 @@ public class InlineModelResolver {
         }
     }
 
-    private Property flattenEnums(Property property, Map<String, Property> propsToUpdate, Map<String, Model> modelsToAdd ,String path, String key) {
+    private Property flattenEnums(Property property, Map<String, Property> properties, Map<String, Model> modelsToAdd ,String path, String key) {
 
         if (property instanceof StringProperty && ((StringProperty) property).getEnum() != null) {
 
@@ -380,13 +381,19 @@ public class InlineModelResolver {
 
             if (existing != null) {
                 RefProperty refProperty = new RefProperty(existing);
+                // refProperty.setName(modelName);
                 refProperty.setRequired(sp.getRequired());
+                refProperty.setReadOnly(true);
+                refProperty.setDescription(sp.getDescription());
                 // propsToUpdate.put(key, refProperty);
                 return refProperty;
             } else {
                 RefProperty refProperty = new RefProperty(modelName);
+                // refProperty.setName(modelName);
                 refProperty.setRequired(sp.getRequired());
-                //propsToUpdate.put(key, refProperty);
+                refProperty.setReadOnly(true);
+                refProperty.setDescription(sp.getDescription());
+                // propsToUpdate.put(key, refProperty);
                 modelsToAdd.put(modelName, model);
                 addGenerated(modelName, model);
                 swagger.addDefinition(modelName, model);
@@ -396,14 +403,14 @@ public class InlineModelResolver {
             ArrayProperty ap = (ArrayProperty) property;
             Property inner = ap.getItems();
 
-            ap.setItems(flattenEnums(inner, propsToUpdate, modelsToAdd, path, key));
+            ap.setItems(flattenEnums(inner, properties, modelsToAdd, path, key));
 
             return ap;
         } else if (property instanceof MapProperty) {
             MapProperty mp = (MapProperty) property;
             Property inner = mp.getAdditionalProperties();
 
-            mp.setAdditionalProperties(flattenEnums(inner, propsToUpdate, modelsToAdd, path, key));
+            mp.setAdditionalProperties(flattenEnums(inner, properties, modelsToAdd, path, key));
 
             return mp;
         }

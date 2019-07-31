@@ -1571,7 +1571,7 @@ public class DefaultCodegen {
         }
 
         CodegenProperty property = CodegenModelFactory.newInstance(CodegenModelType.PROPERTY);
-        property.name = toVarName(name);
+        property.name = toVarName(name); //  p.getName() == null ? toVarName(name) : p.getName();
         property.baseName = name;
         property.nameInCamelCase = camelize(property.name, false);
         property.description = escapeText(p.getDescription());
@@ -1845,7 +1845,7 @@ public class DefaultCodegen {
             property.maxItems = ap.getMaxProperties();
 
             // handle inner property
-            CodegenProperty cp = fromProperty(property.name, ap.getAdditionalProperties()); // The "property.name" here used to a hard-coded string "inner". No idea why it was seen as necessary to use a hardcoded string, but if name-conflicts occur, maybe try to use a prefix or something?
+            CodegenProperty cp = fromProperty(property.name, ap.getAdditionalProperties());
             updatePropertyForMap(property, cp);
         } else {
             setNonArrayMapProperty(property, type);
